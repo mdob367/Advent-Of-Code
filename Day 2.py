@@ -1,7 +1,7 @@
 import pandas as pd
 import requests
 
-cookie='53616c7465645f5f4f216029feea81c3742c80b895fbfa83674bed0207b87b23665371794224ce9ba0689a06d4c3f640bf40eabb0ef900e7b14ee90dfb8bdcf1'
+cookie=''
 file = 'https://adventofcode.com/2023/day/2/input'
 response = requests.get(file, cookies={'session':cookie})
 input_file = response.text
