@@ -4,7 +4,7 @@ import numpy as np
 import re
 import math
 
-ranks ='AKQJT98765432'[::-1]
+ranks ='AKQT98765432J'[::-1]
 
 def get_input_file():
     # Read session_cookie.txt
@@ -33,6 +33,13 @@ def parse_hands(data):
 def get_type(hand):
     # Get rank of hand
     counts = [hand.count(rank) for rank in ranks]
+    J_count = hand.count('J')
+    # Drop Js
+    counts = counts[1:]
+    # Apply J to largest count
+    largest = max(counts)
+    counts[counts.index(largest)] += J_count
+
     if 5 in counts:
         hand_type = 7
     elif 4 in counts:
@@ -61,6 +68,6 @@ def get_rank(cards):
 
 
 
-hands = parse_hands(example)
-hands.sort(key=lambda x: get_rank(x[0]), reverse=True)
-print(hands)
+hands = parse_hands(get_input_file())
+hands.sort(key=lambda x: get_rank(x[0]))
+print(sum([(i+1)*int(h[1]) for i, h in enumerate(hands)]))
