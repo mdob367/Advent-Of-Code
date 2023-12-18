@@ -37,17 +37,30 @@ U 3 (#a77fa3)
 L 2 (#015232)
 U 2 (#7a21e3)"""
 
+def get_dir_dist(line, hex=True):
+    if hex:
+        val = line[2]
+        val = val[2:-1]
+        dir = int(val[-1])
+        dist = int(val[:-1], 16)
+        dir = {0: 'R', 1: 'D', 2: 'L', 3: 'U'}[dir]
+        return dir, dist
+    else:
+        dir = line[0]
+        dist = int(line[1])
+        return dir, dist
+
 def dig_trench(input, size=1000):
     input = parse_input(input)
     trench_map = [['.' for i in range(size)] for j in range(size)]
 
+
     loc = [size//2,size//2]
-    prev_dir = input[-1][0]
+    prev_dir = get_dir_dist(input[-1])[0]
     input[-1][1] = int(input[-1][1])-1
     for line in input:
         print(loc, line)
-        dir = line[0]
-        dist = int(line[1])
+        dir, dist = get_dir_dist(line, hex=True)
         if dir == 'U':
             if prev_dir == 'R':
                 trench_map[loc[0]][loc[1]] = 'J'
@@ -104,14 +117,19 @@ def fill_interior(trench_map):
                     trench_map[node[0]][node[1]] = '#'
     return trench_map
 
-trench_map = dig_trench(get_input_file(), 1000)
-print('\n'.join([''.join(line) for line in trench_map]))
+# trench_map = dig_trench(get_input_file(), 1000)
+trench_map = dig_trench(example, int(1e6))
+# print('\n'.join([''.join(line) for line in trench_map]))
 trench_map = fill_interior(trench_map)
-print('\n'.join([''.join(line) for line in trench_map]))
+# print('\n'.join([''.join(line) for line in trench_map]))
 # Count non-'.' in trench_map
-count = 0
-for line in trench_map:
-    for char in line:
-        if char != '.':
-            count += 1
-print(count)
+def count_water(trench_map):
+    count = 0
+    for line in trench_map:
+        for char in line:
+            if char != '.':
+                count += 1
+    print(count)
+    return count
+
+count_water(trench_map)
