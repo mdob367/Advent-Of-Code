@@ -8,6 +8,8 @@ import time
 import functools
 import cProfile
 import pstats
+import collections
+
 
 
 
@@ -44,14 +46,48 @@ def process_char(c, curr_val=0):
     curr_val %= 256
     return curr_val
 
-def process_group(group):
+def process_action(action, boxes):
+    if '=' in action:
+        label, val = action.split('=')
+        val = int(val)
+        op = '='
+    elif '-' in action:
+        label = action[:-1]
+        op = '-'
+    box = get_box(label)
+    print(label, box, op)
+    if op == '=':
+        boxes[box][label] = val
+    elif op == '-':
+        # Remove if exists
+        if label in boxes[box]:
+            del boxes[box][label]
+
+    return boxes
+
+
+
+def get_box(label):
     curr_val = 0
-    print
-    for c in group:
+    for c in label:
         curr_val = process_char(c, curr_val)
     return curr_val
 
+
+def calc_power(boxes):
+    power = 0
+
+    for box, lenses in boxes.items():
+        slot = 0
+        for val in lenses.values():
+            slot+=1
+            focus = val * slot
+            power += focus * (1+box)
+    return power
+
+
 def process_input(source='ex'):
+    
     if source == 'ex':
         input = example
     elif source == 'ex2':
@@ -59,10 +95,18 @@ def process_input(source='ex'):
     else:
         input = get_input_file()
     input = parse_inp_str(input)
-    run_sum = 0
-    for grp in input:
-        run_sum += process_group(grp)
-    return run_sum
+    
+    
+    boxes={i: collections.OrderedDict() for i in range(256)}
+
+    for action in input:
+        print(action)
+        boxes = process_action(action, boxes)
+        print(boxes[0], boxes[3])
+    
+    print(calc_power(boxes))
+    exit()
+    return boxes
 
 print(process_input(''))
 
