@@ -2,29 +2,13 @@ import numpy as np
 import re
 import math
 import itertools
-import requests
+import get_input
 from functools import lru_cache
 import time
 import functools
 import cProfile
 import pstats
 import collections
-
-
-
-
-def get_input_file():
-    # Read session_cookie.txt
-    with open('session_cookie.txt') as f:
-        cookie = f.read()
-
-    file = 'https://adventofcode.com/2023/day/15/input'
-    response = requests.get(file, cookies={'session':cookie})
-    # Remove last line if blank
-    txt = response.text
-    if txt[-1] == '\n':
-        txt = txt[:-1]
-    return txt
 
 
 def parse_inp_str(input_str):
@@ -93,7 +77,7 @@ def process_input(source='ex'):
     elif source == 'ex2':
         input = example2
     else:
-        input = get_input_file()
+        input = get_input.get_input_file(15)
     input = parse_inp_str(input)
     
     
