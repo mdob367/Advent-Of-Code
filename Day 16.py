@@ -3,6 +3,7 @@ import re
 import math
 import itertools
 import get_input
+from functools import lru_cache
 
 example = r""".|...\....
 |.-.\.....
@@ -18,10 +19,9 @@ example = r""".|...\....
 
 def parse_map(mirr_map):
     mirr_map = mirr_map.split('\n')
-    mirr_map = [list(line) for line in mirr_map]
+    mirr_map = tuple(tuple(line) for line in mirr_map)
     # mirr_map = np.array(mirr_map)
     return mirr_map
-
 
 def next_spot(mirr_map, current):
     i, j, dir = current
@@ -79,20 +79,24 @@ def next_spot(mirr_map, current):
             dir = 'up'
     if not next_spot:
         next_spot = [(i, j, dir)]
+
+    clean_spot = []
     for spt in next_spot:
         if spt[0] < 0 or spt[0] >= m or spt[1] < 0 or spt[1] >= n:
-            next_spot.remove(spt)
-    return next_spot
+            continue
+        else:
+            clean_spot.append(spt)
+    return clean_spot
 
 
-def energize(str_map):
-    mirr_map = parse_map(str_map)
+def energize(str_map, start):
+    print(start)
+    
     energized = []
-    spot = [(0, 0, 'right')]
+    spot = start
     while spot:
         next_spot_list = []
         for spt in spot:
-            print(spt, mirr_map[spt[0]][spt[1]])
             if spt in energized:
                 continue
             else:
@@ -101,4 +105,36 @@ def energize(str_map):
         spot = next_spot_list
     energized = set([(i, j) for i, j, _ in energized])
     return len(energized)
-print(energize(get_input.get_input_file(16)))
+
+mirr_map = parse_map(get_input.get_input_file(16))
+# mirr_map = parse_map(example)
+max = (None, 0)
+
+i=0
+dir = 'down'
+for j in range(len(mirr_map[0])):
+    energized = energize(mirr_map, start=[(i, j, dir)])
+    if energized > max[1]:
+        max = ((i, j), energized)
+
+i=len(mirr_map)-1
+dir = 'up'
+for j in range(len(mirr_map[0])):
+    energized = energize(mirr_map, start=[(i, j, dir)])
+    if energized > max[1]:
+        max = ((i, j), energized)
+
+j=0
+dir = 'right'
+for i in range(len(mirr_map)):
+    energized = energize(mirr_map, start=[(i, j, dir)])
+    if energized > max[1]:
+        max = ((i, j), energized)
+
+j=len(mirr_map[0])-1
+dir = 'left'
+for i in range(len(mirr_map)):
+    energized = energize(mirr_map, start=[(i, j, dir)])
+    if energized > max[1]:
+        max = ((i, j), energized)
+print(max)
