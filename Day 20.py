@@ -102,16 +102,29 @@ def run_config(config):
     pulse_count = {'low': 0, 'high': 0}
     bp=0
     start_time = time.time()
+    vr_inputs = {}
     while True:
         stack = [('button', 'broadcaster', 'low')]
         bp+=1
-        if bp % 100000 == 0:
+        if bp % 1000000 == 0:
             print(bp, f'({(time.time() - start_time):.0f}s)')
         while stack:
             curr = stack.pop(0)
             if curr[1] == 'rx' and curr[2] == 'low':
                 print(bp)
                 exit()
+            if curr[1] == 'vr' and curr[2] == 'high':
+                bp_l = vr_inputs.get(curr[0], [])
+                if bp_l == []:
+                    vr_inputs[curr[0]] = [bp]
+                else:
+                    for b in bp_l:
+                        if bp%b == 0:
+                            break
+                    else:
+                        vr_inputs[curr[0]] = bp_l + [bp]
+
+                print(curr[0], vr_inputs)
             pulse_count[curr[2]] += 1
             if curr[1] not in config:
                 continue

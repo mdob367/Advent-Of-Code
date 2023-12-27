@@ -69,4 +69,5 @@ def go_for_a_walk(garden_map, start, max_steps):
 
 garden_map, start = parse_map(get_input.get_input_file(21))
 
+
 print(go_for_a_walk(garden_map, start, 64))
