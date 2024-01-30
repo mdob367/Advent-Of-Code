@@ -135,7 +135,8 @@ def find_longer_path(hiking_map, start, end):
         removed = 0
 
         new_paths = []
-        for path_and_len in paths:
+        while paths:
+            path_and_len = paths.pop()
             path, path_len = path_and_len
             spot = path[-1]
             if spot == end:
