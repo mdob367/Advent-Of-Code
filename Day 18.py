@@ -37,7 +37,7 @@ U 3 (#a77fa3)
 L 2 (#015232)
 U 2 (#7a21e3)"""
 
-def get_dir_dist(line, hex=True):
+def get_dir_dist(line, hex=False):
     if hex:
         val = line[2]
         val = val[2:-1]
@@ -52,7 +52,9 @@ def get_dir_dist(line, hex=True):
 
 def dig_trench(input, size=1000):
     input = parse_input(input)
-    trench_map = [['.' for i in range(size)] for j in range(size)]
+    print(input)
+    trench_map = [['.'*size] * size]
+    print(trench_map)
 
 
     loc = [size//2,size//2]
@@ -117,10 +119,42 @@ def fill_interior(trench_map):
                     trench_map[node[0]][node[1]] = '#'
     return trench_map
 
+def shoelace(points):
+    area_2 = 0
+    line_len = 0
+    for pt_i in range(len(points)-1):
+        pt1, pt2 = points[pt_i], points[pt_i+1]
+        area_2 += pt1[0]*pt2[1] - pt1[1]*pt2[0]
+        line_len += math.sqrt((pt1[0]-pt2[0])**2 + (pt1[1]-pt2[1])**2)
+
+    area_2 += points[-1][0]*points[0][1] - points[-1][1]*points[0][0]
+    area = area_2 / 2
+    return int(abs(area) - 0.5 * line_len + 1) + line_len
+
+def walk_points(input, hex=True):
+    input = parse_input(input)
+    point_list = [(0,0)]
+    for line in input:
+        dir, dist = get_dir_dist(line, hex)
+        if dir == 'U':
+            point_list.append((point_list[-1][0], point_list[-1][1]+dist))
+        elif dir == 'D':
+            point_list.append((point_list[-1][0], point_list[-1][1]-dist))
+        elif dir == 'R':
+            point_list.append((point_list[-1][0]+dist, point_list[-1][1]))
+        elif dir == 'L':
+            point_list.append((point_list[-1][0]-dist, point_list[-1][1]))
+        else:
+            print('Error')
+            return
+        
+    return point_list
+
+
 # trench_map = dig_trench(get_input_file(), 1000)
-trench_map = dig_trench(example, int(1e6))
+# trench_map = dig_trench(example, int(1e6))
 # print('\n'.join([''.join(line) for line in trench_map]))
-trench_map = fill_interior(trench_map)
+# trench_map = fill_interior(trench_map)
 # print('\n'.join([''.join(line) for line in trench_map]))
 # Count non-'.' in trench_map
 def count_water(trench_map):
@@ -132,4 +166,11 @@ def count_water(trench_map):
     print(count)
     return count
 
-count_water(trench_map)
+# count_water(trench_map)
+
+pts = walk_points(get_input_file(), True)
+# print(pts)
+print(shoelace(pts))
+# assert(shoelace(pts)==952408144115)
+print('done')
+
