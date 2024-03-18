@@ -343,10 +343,14 @@ def infinite_walk(garden_map, start, max_steps):
     print(reachable_count)
     print(height, width)
 
+    plot_range = max_steps//height
 
-    for i in range(-max_steps//height, max_steps//height+1 + 1):
+    for i in range(-plot_range, plot_range+1 + 1):
         if i%100==0:
-            print("Processing row: {row} of {tot}; {tot_reach} so far".format(row=i, tot=max_steps//height+1, tot_reach=tot_reachable))
+            tot_plots = (2 * plot_range)**2 / 2
+            processed_plots = (i + plot_range) * (i + plot_range) / 2
+            percentage_of_plots = processed_plots / tot_plots
+            print("Processing row: {row} of {t_p}. {pct: 0.2%} done; {tot_reach} so far".format(row=i+plot_range, t_p=plot_range*2, pct=percentage_of_plots, tot_reach=tot_reachable))
         steps_to_plot = 0
         entry = (height//2, width//2)
  
@@ -401,15 +405,18 @@ def infinite_walk(garden_map, start, max_steps):
 
     return tot_reachable
 
+
 # garden_map, start = parse_map(get_input.get_input_file(21))
 garden_map, start = parse_map(real_talk)
 example_answers={6: 16, 10: 50, 50: 1594, 100: 6536, 500: 167004, 1000: 668697, 5000: 16733044}
 example2_answers={6: 36, 10: 90, 50: 1940, 100: 7645, 500: 188756, 1000: None, 5000: None}
 
 time1 = time.time()
-testing = 5000
+testing = 26501365
 print("\n\n The Answer for max of", testing, "is", infinite_walk(garden_map, start, testing))
 # print("\n\n The Answer for max of", testing, "is", go_for_a_walk(garden_map, start, testing))
 print(" The actual Answer should be ", example_answers[testing], '\n\n')
 elapsed = time.time() - time1
 print('Elapsed time: {}'.format(time.strftime("%H:%M:%S", time.gmtime(elapsed))))
+
+# Too low: 138085605236626
