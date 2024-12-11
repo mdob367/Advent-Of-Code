@@ -53,3 +53,110 @@ def find_loops(guard_map, start_pos, start_dir):
             # Check if we can make a loop
             if next_pos not in loop_blocks:
                 loop_guard_map = deepcopy(guard_map)
+                loop_guard_map[next_pos[0]][next_pos[1]] = '#'
+                change_dir = turn_dir(dir)
+                if in_loop(loop_guard_map, start_pos, start_dir):
+                    loop_blocks.append(next_pos)
+                    print('current length:', len(loop_blocks))
+                    # if len(loop_blocks) == 11:
+                        # print_map(guard_map)
+                    # guard_map[next_pos[0]][next_pos[1]] = 'O'
+                    # print('\n\nLoop found at:', next_pos)
+                    # print_map(guard_map)
+                    # guard_map[next_pos[0]][next_pos[1]] = '#'
+            pos = next_pos
+ 
+    return loop_blocks
+
+
+def in_loop(loop_guard_map, start_pos, start_dir):
+    pos = start_pos
+    dir = start_dir
+    new_turn = [(pos, dir)]
+    new_turn = []
+
+    counter = 0
+    while True:
+        if counter >10:
+            new_turn.append((pos, dir))
+        counter += 1
+        if counter % 1000000 == 0:
+            print('error', new_turn)
+            print_map(loop_guard_map)
+            exit()
+
+        loop_guard_map[pos[0]][pos[1]] = dir_dict[dir][0]
+        next_pos = (pos[0] + dir[0], pos[1] + dir[1])
+
+        if not in_map(next_pos, loop_guard_map):
+            return False
+        if loop_guard_map[next_pos[0]][next_pos[1]] == '#':
+            dir = (dir[1], -dir[0])
+        else:
+            pos = next_pos
+        
+        if (pos, dir) in new_turn:
+            return True
+
+ 
+    return False
+
+
+def walk_map(loop_guard_map, start_pos, start_dir):
+
+    pos = start_pos
+    dir = start_dir
+
+    while True:
+        loop_guard_map[pos[0]][pos[1]] = 'X'
+        next_pos = (pos[0] + dir[0], pos[1] + dir[1])
+
+        if not in_map(next_pos, loop_guard_map):
+            break
+        if loop_guard_map[next_pos[0]][next_pos[1]] == '#':
+            dir = (dir[1], -dir[0])
+        else:
+            pos = next_pos
+ 
+    return guard_map
+
+
+def print_map(display_map):
+    for line in display_map:
+        print(''.join(line))
+
+
+def count_guarded(guard_map):
+    count = 0
+    for line in guard_map:
+        count += line.count('#') + line.count('.')
+    return len(guard_map)**2 - count
+
+def count_char(guard_map, ct_char):
+    count = 0
+    for line in guard_map:
+        count += line.count(ct_char)
+    return count
+
+test_input ="""....#.....
+.........#
+..........
+..#.......
+.......#..
+..........
+.#..^.....
+........#.
+#.........
+......#..."""
+
+puzz_input = get_input.get_input_file(6)
+# puzz_input = test_input
+
+guard_map, start = parse_map(puzz_input, '^')
+# guard_map = walk_map(guard_map, start, (-1, 0))
+print_map(guard_map)
+print(count_guarded(guard_map)) # Part 1
+loops = find_loops(guard_map, start, (-1, 0))
+print(loops)
+print(len(loops))
+print(len(set(loops)))
